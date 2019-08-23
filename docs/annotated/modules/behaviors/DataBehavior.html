@@ -546,7 +546,7 @@ When a view is attached it is rendered anyway.</p>
           <span class="hljs-keyword">return</span> idsResult;
         }, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">errorResponse</span>) </span>{
           errorResponse.failedOnIds = <span class="hljs-literal">true</span>;
-          <span class="hljs-keyword">return</span> errorResponse;
+          <span class="hljs-keyword">throw</span> errorResponse;
         })
         .then(<span class="hljs-keyword">this</span>.__fetchSuccess, <span class="hljs-keyword">this</span>.__fetchFailed);
     },
@@ -567,7 +567,7 @@ When a view is attached it is rendered anyway.</p>
           <span class="hljs-keyword">return</span> idsResult;
         }, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">errorResponse</span>) </span>{
           errorResponse.failedOnIds = <span class="hljs-literal">true</span>;
-          <span class="hljs-keyword">return</span> errorResponse;
+          <span class="hljs-keyword">throw</span> errorResponse;
         })
         .then(<span class="hljs-keyword">this</span>.__fetchSuccess, <span class="hljs-keyword">this</span>.__fetchFailed);
     },
@@ -670,8 +670,7 @@ When a view is attached it is rendered anyway.</p>
         retrieveOnceDeferred.reject();
       } <span class="hljs-keyword">else</span> {
         <span class="hljs-keyword">this</span>.once(<span class="hljs-string">'fetched'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-          <span class="hljs-keyword">var</span> demographicsFetchSuccess = <span class="hljs-keyword">this</span>.get(<span class="hljs-string">'fetchSuccess'</span>);
-          <span class="hljs-keyword">if</span> (demographicsFetchSuccess) {
+          <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.get(<span class="hljs-string">'fetchSuccess'</span>)) {
             retrieveOnceDeferred.resolve();
           } <span class="hljs-keyword">else</span> {
             retrieveOnceDeferred.reject();
@@ -1061,6 +1060,7 @@ When a view is attached it is rendered anyway.</p>
      * @param {Object} response the response from the server.
      *   @param {boolean} [response.skipObjectRetrieval=false] if we retrieved objects, then trigger fetch event.
      *   @param {boolean} [response.forceFetchedEvent=false] if true then trigger fetch no matter what.
+     * @returns {Object} response - returns the response to match promise spec that converts returned values into resolves.
      * @private
      */</span>
     __fetchSuccess: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
@@ -1087,6 +1087,7 @@ When a view is attached it is rendered anyway.</p>
      *   @param {boolean} [response.skipObjectRetrieval=false] if we retrieved objects, then trigger fetch event.
      *   @param {boolean} [response.forceFetchedEvent=false] if true then trigger fetch no matter what.
      *   @param {boolean} [response.emptyIds=false] true if were are no ids retrieved.  False otherwise.
+     * @throws {Object} response - throws an error to match promise spec that converts thrown errors into rejects.
      * @private
      */</span>
     __fetchFailed: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
@@ -1107,7 +1108,7 @@ When a view is attached it is rendered anyway.</p>
       }
       <span class="hljs-keyword">this</span>.trigger(<span class="hljs-string">'fetched:ids'</span>);
       <span class="hljs-keyword">this</span>.data.trigger(<span class="hljs-string">'fetched:ids'</span>);
-      <span class="hljs-keyword">return</span> response;
+      <span class="hljs-keyword">throw</span> response;
     },
 
     <span class="hljs-comment">/**

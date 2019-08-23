@@ -302,7 +302,7 @@
           return idsResult;
         }, function(errorResponse) {
           errorResponse.failedOnIds = true;
-          return errorResponse;
+          throw errorResponse;
         })
         .then(this.__fetchSuccess, this.__fetchFailed);
     },
@@ -323,7 +323,7 @@
           return idsResult;
         }, function(errorResponse) {
           errorResponse.failedOnIds = true;
-          return errorResponse;
+          throw errorResponse;
         })
         .then(this.__fetchSuccess, this.__fetchFailed);
     },
@@ -426,8 +426,7 @@
         retrieveOnceDeferred.reject();
       } else {
         this.once('fetched', function() {
-          var demographicsFetchSuccess = this.get('fetchSuccess');
-          if (demographicsFetchSuccess) {
+          if (this.get('fetchSuccess')) {
             retrieveOnceDeferred.resolve();
           } else {
             retrieveOnceDeferred.reject();
@@ -792,6 +791,7 @@
      * @param {Object} response the response from the server.
      *   @param {boolean} [response.skipObjectRetrieval=false] if we retrieved objects, then trigger fetch event.
      *   @param {boolean} [response.forceFetchedEvent=false] if true then trigger fetch no matter what.
+     * @returns {Object} response - returns the response to match promise spec that converts returned values into resolves.
      * @private
      */
     __fetchSuccess: function(response) {
@@ -818,6 +818,7 @@
      *   @param {boolean} [response.skipObjectRetrieval=false] if we retrieved objects, then trigger fetch event.
      *   @param {boolean} [response.forceFetchedEvent=false] if true then trigger fetch no matter what.
      *   @param {boolean} [response.emptyIds=false] true if were are no ids retrieved.  False otherwise.
+     * @throws {Object} response - throws an error to match promise spec that converts thrown errors into rejects.
      * @private
      */
     __fetchFailed: function(response) {
@@ -838,7 +839,7 @@
       }
       this.trigger('fetched:ids');
       this.data.trigger('fetched:ids');
-      return response;
+      throw response;
     },
 
     /**
